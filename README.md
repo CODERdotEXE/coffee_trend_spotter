@@ -74,6 +74,8 @@ reads) is rebuilt from the store on each sync.
 
 ## Deploy (live, multi-user) — 100% free
 
+> **Just want the steps?** Follow [`DEPLOY.md`](DEPLOY.md) — exact screens and buttons, ~20 min.
+
 No server and no database. The site is **static files** + a **committed `dataset.json`**;
 **GitHub Actions** runs the sync on a schedule and commits the refreshed data back (the git
 repo *is* the persistent store — the data is < 1 MB). A static host serves it with free TLS
