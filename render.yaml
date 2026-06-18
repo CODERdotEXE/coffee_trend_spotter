@@ -1,0 +1,31 @@
+# Render blueprint — deploy Brewscope as a single web service with a persistent disk.
+# In Render: New +  ->  Blueprint  ->  pick this repo. Then set the two secrets below.
+services:
+  - type: web
+    name: brewscope
+    runtime: python
+    plan: starter            # Starter ($7/mo) is required for a persistent disk.
+                             # The free plan has NO disk, so store.json would reset on each deploy.
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    autoDeploy: true
+    envVars:
+      - key: HOST
+        value: "0.0.0.0"     # bind on all interfaces so Render can route to it
+      - key: BREWSCOPE_DATA
+        value: /var/data     # store.json / dataset.json live on the mounted disk
+      - key: BREWSCOPE_USER
+        value: team          # the username your team logs in with
+      - key: BREWSCOPE_PASSWORD
+        sync: false          # set in the Render dashboard (shared team password)
+      - key: YOUTUBE_API_KEY
+        sync: false          # set in the Render dashboard (your YouTube Data API key)
+      # Optional Reddit (free) — uncomment and set in dashboard to enrich the radar:
+      # - key: REDDIT_CLIENT_ID
+      #   sync: false
+      # - key: REDDIT_CLIENT_SECRET
+      #   sync: false
+    disk:
+      name: brewscope-data
+      mountPath: /var/data
+      sizeGB: 1              # 1 GB is far more than enough (data is < 1 MB)

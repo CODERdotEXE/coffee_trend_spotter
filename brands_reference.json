@@ -1,0 +1,44 @@
+{
+  "_comment": "Built-in coffee-brand knowledge base (competitors). Market-tagged. The tool matches these for clean share-of-voice, and auto-discovers NEW brands not listed here. Extend this file anytime; you do not edit code/config.",
+  "brands": [
+    { "name": "Starbucks", "markets": ["US", "GB", "IN"] },
+    { "name": "Nescafe", "markets": ["US", "GB", "IN"] },
+    { "name": "Nespresso", "markets": ["US", "GB", "IN"] },
+    { "name": "Lavazza", "markets": ["US", "GB", "IN"] },
+    { "name": "Illy", "markets": ["US", "GB", "IN"] },
+    { "name": "McCafe", "markets": ["US", "GB", "IN"] },
+    { "name": "Davidoff", "markets": ["GB", "IN"] },
+
+    { "name": "Dunkin", "markets": ["US"] },
+    { "name": "Folgers", "markets": ["US"] },
+    { "name": "Maxwell House", "markets": ["US"] },
+    { "name": "Peet's", "markets": ["US"] },
+    { "name": "Death Wish Coffee", "markets": ["US"] },
+    { "name": "Caribou Coffee", "markets": ["US"] },
+    { "name": "Cafe Bustelo", "markets": ["US"] },
+    { "name": "Community Coffee", "markets": ["US"] },
+    { "name": "Stumptown", "markets": ["US"] },
+    { "name": "Blue Bottle", "markets": ["US"] },
+    { "name": "La Colombe", "markets": ["US"] },
+    { "name": "Green Mountain", "markets": ["US"] },
+    { "name": "Ryze", "markets": ["US"] },
+    { "name": "Four Sigmatic", "markets": ["US"] },
+
+    { "name": "Costa Coffee", "markets": ["GB"] },
+    { "name": "Caffe Nero", "markets": ["GB"] },
+    { "name": "Pret A Manger", "markets": ["GB"] },
+    { "name": "Greggs", "markets": ["GB"] },
+    { "name": "Kenco", "markets": ["GB"] },
+    { "name": "Taylors of Harrogate", "markets": ["GB"] },
+    { "name": "Douwe Egberts", "markets": ["GB"] },
+    { "name": "Pact Coffee", "markets": ["GB"] },
+
+    { "name": "Tim Hortons", "markets": ["CA", "US"] },
+    { "name": "Second Cup", "markets": ["CA"] },
+    { "name": "Kicking Horse", "markets": ["CA"] },
+    { "name": "Nabob", "markets": ["CA"] },
+    { "name": "Balzac's", "markets": ["CA"] },
+    { "name": "Van Houtte", "markets": ["CA"] },
+    { "name": "Muskoka Roastery", "markets": ["CA"] }
+  ]
+}

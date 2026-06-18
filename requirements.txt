@@ -1,0 +1,7 @@
+flask
+waitress
+requests
+vaderSentiment
+feedparser
+statsmodels
+numpy

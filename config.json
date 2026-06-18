@@ -1,0 +1,39 @@
+{
+  "app_name": "Brewscope",
+  "tagline": "Coffee NPD Discovery",
+  "regions": { "US": "United States", "GB": "United Kingdom", "CA": "Canada" },
+  "region_groups": { "USUK": ["US", "GB"], "US": ["US"], "GB": ["GB"], "CA": ["CA"] },
+  "search_queries": [
+    "coffee", "cold brew coffee", "iced coffee", "espresso drink", "latte recipe",
+    "coffee review", "new coffee", "coffee trend", "coffee taste test", "best coffee"
+  ],
+  "days_back": 150,
+  "forecast_weeks": 8,
+  "coffee_types": {
+    "Cold Brew": ["cold brew"],
+    "Nitro": ["nitro"],
+    "Iced Coffee": ["iced coffee", "iced latte", "iced americano"],
+    "Espresso": ["espresso", "ristretto", "doppio"],
+    "Latte": ["latte", "flat white", "cortado"],
+    "Cappuccino": ["cappuccino"],
+    "Mocha": ["mocha"],
+    "Americano": ["americano"],
+    "Drip / Filter": ["drip coffee", "filter coffee", "pour over", "french press", "percolator", "moka pot", "aeropress"],
+    "Instant": ["instant coffee"],
+    "Cold Foam": ["cold foam", "sweet cream foam"],
+    "Decaf": ["decaf"],
+    "Single Origin": ["single origin"],
+    "Flavored": ["pumpkin spice", "vanilla latte", "caramel", "hazelnut", "brown sugar", "shaken espresso"],
+    "Specialty / Viral": ["dalgona", "proffee", "olive oil coffee", "mushroom coffee", "matcha", "dubai chocolate", "ube"]
+  },
+  "company": "Tata Consumer Products",
+  "our_brands": [
+    { "name": "Eight O'Clock", "markets": ["US", "GB", "CA"] },
+    { "name": "Tata Coffee", "markets": ["US", "GB", "CA"] }
+  ],
+  "launch_keywords": [
+    "launch", "launches", "launched", "launching", "introducing", "introduces",
+    "debut", "debuts", "unveil", "unveils", "now available", "releases", "released",
+    "new flavor", "new flavour", "new line", "new range", "limited edition", "limited-edition", "rolling out"
+  ]
+}
