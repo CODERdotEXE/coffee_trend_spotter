@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# local secrets — NEVER commit; set these as repo/host secrets instead
+credentials.json
+
+# atomic-write temp files
+data/*.tmp
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# NOTE: data/*.json IS committed on purpose — the git repo is our free
+# persistent store (store.json accumulates across syncs).

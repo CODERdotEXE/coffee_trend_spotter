@@ -486,9 +486,25 @@ function render() {
   renderDataWindow(); fn();
 }
 function showEmpty() {
+  const action = window.BREWSCOPE_STATIC
+    ? (window.BREWSCOPE_ACTIONS_URL ? `<a class="btn-primary" href="${window.BREWSCOPE_ACTIONS_URL}" target="_blank">Open GitHub Actions → Run workflow</a>` : "")
+    : `<button class="btn-primary" onclick="startSync()">Run first sync</button>`;
+  const note = window.BREWSCOPE_STATIC
+    ? "The scheduled sync hasn't published data yet. Trigger the GitHub Actions workflow, then refresh this page."
+    : "Sync the latest coffee conversation from YouTube (US &amp; UK) and the coffee press. Takes about a minute.";
   $("#content").innerHTML = `<div class="empty"><div class="empty-card"><span class="material-symbols-outlined ic">cloud_sync</span>
-    <h2>No data yet</h2><p>Sync the latest coffee conversation from YouTube (US &amp; UK) and the coffee press. Takes about a minute.</p>
-    <button class="btn-primary" onclick="startSync()">Run first sync</button></div></div>`;
+    <h2>No data yet</h2><p>${note}</p>${action}</div></div>`;
+}
+function setupSyncButton() {
+  const b = $("#syncBtn");
+  if (!window.BREWSCOPE_STATIC) { b.onclick = startSync; return; }
+  if (window.BREWSCOPE_ACTIONS_URL) {
+    b.title = "Refresh data — runs the sync on GitHub Actions, then auto-deploys";
+    b.innerHTML = '<span class="material-symbols-outlined">sync</span> Refresh';
+    b.onclick = () => window.open(window.BREWSCOPE_ACTIONS_URL, "_blank");
+  } else {
+    b.style.display = "none";
+  }
 }
 
 // ---------- sync ----------
@@ -502,8 +518,10 @@ window.startSync = async function () {
   }, 1200);
 };
 const SRC_LABEL = { youtube: "YouTube", news: "Google News", reddit: "Reddit", press: "Coffee press" };
+// Static deploy reads the committed JSON; local Flask serves it live from /api/data.
+const DATA_URL = window.BREWSCOPE_STATIC ? "./data/dataset.json" : "/api/data";
 async function loadData() {
-  State.data = await (await fetch("/api/data")).json();
+  State.data = await (await fetch(DATA_URL, { cache: "no-store" })).json();
   const m = State.data?.meta;
   if (m) {
     $("#lastSync").textContent = new Date(m.generated).toLocaleString();
@@ -518,7 +536,7 @@ async function loadData() {
 function init() {
   $$(".rail-item").forEach(b => b.onclick = () => { $$(".rail-item").forEach(x => x.classList.remove("active")); b.classList.add("active"); State.view = b.dataset.view; render(); });
   $$("#regionToggle button").forEach(b => b.onclick = () => { $$("#regionToggle button").forEach(x => x.classList.remove("active")); b.classList.add("active"); State.region = b.dataset.region; render(); });
-  $("#syncBtn").onclick = startSync;
+  setupSyncButton();
   $("#drawerBg").onclick = closeDrawer;
   loadData().then(render);
 }

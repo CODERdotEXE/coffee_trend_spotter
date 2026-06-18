@@ -72,34 +72,54 @@ reads) is rebuilt from the store on each sync.
 - Rebuild reports/metrics from the store **without** hitting the API:
   `python collector.py --reprocess`
 
-## Deploy (live, multi-user) — Render
+## Deploy (live, multi-user) — 100% free
 
-Brewscope runs as **one process with many threads** (via `waitress`) — perfect for a
-small team. No database: a few hundred KB of JSON on a **persistent disk** is the only
-storage needed. Multiple people reading is trivial; a built-in lock stops two syncs
-overlapping; writes are atomic (temp-file + rename) so a reader never catches a half file.
+No server and no database. The site is **static files** + a **committed `dataset.json`**;
+**GitHub Actions** runs the sync on a schedule and commits the refreshed data back (the git
+repo *is* the persistent store — the data is < 1 MB). A static host serves it with free TLS
+and **never sleeps**.
 
-**Steps:**
+```
+GitHub Actions (free cron) ── runs collector.py ──► commits data/*.json to the repo
+                                                          │
+Cloudflare Pages (free, TLS) ◄──── auto-deploys ─────────┘  serves index.html + app.js + data
+   └─ Cloudflare Access = free email login for up to 50 users
+```
 
-1. Push this `coffee-npd-app` folder to a GitHub repo (it becomes the repo root).
-2. Render → **New + → Blueprint** → pick the repo. It reads [`render.yaml`](render.yaml)
-   (Starter plan + a 1 GB disk mounted at `/var/data`).
-3. Set two secrets in the Render dashboard:
-   - `BREWSCOPE_PASSWORD` — the shared team password (username defaults to `team`).
-   - `YOUTUBE_API_KEY` — your YouTube Data API key.
-4. Deploy. You get an `https://brewscope-xxxx.onrender.com` URL. Share it + the password
-   with your 2–3 teammates. Click **Sync** once to populate the disk.
+**1 — Push to GitHub.** Push this `coffee-npd-app` folder to a repo (it becomes the repo
+root). It can stay **private**. The included files do the rest:
+- [`.github/workflows/sync.yml`](.github/workflows/sync.yml) — the scheduled + on-demand sync.
+- [`index.html`](index.html) — the static entry point (`app.js` runs in static mode).
+- [`_headers`](_headers) — stops Cloudflare caching the daily data file.
 
-**Notes:**
-- The **Starter plan ($7/mo) is required** — the free plan has no persistent disk, so the
-  accumulation store would reset on every deploy. Storage size isn't the reason ($/mo buys
-  the disk, not space).
-- Env vars that control the app: `BREWSCOPE_PASSWORD`, `BREWSCOPE_USER`, `BREWSCOPE_DATA`
-  (disk path), `HOST`, `PORT` (Render injects `PORT`), `YOUTUBE_API_KEY`, optional Reddit keys.
-- To **seed** the cloud with your current local data, copy your local `data/store.json` onto
-  the Render disk (or just run Sync a few times — it accumulates).
-- Locally, none of this applies: `python app.py` still runs open on `127.0.0.1:5000`
-  (auth off unless you set `BREWSCOPE_PASSWORD`).
+**2 — Add the API key as a repo secret.** Repo → Settings → Secrets and variables → Actions →
+**New repository secret**: `YOUTUBE_API_KEY` (and optionally `REDDIT_CLIENT_ID` /
+`REDDIT_CLIENT_SECRET` / `REDDIT_USER_AGENT`). Then run the workflow once: Actions tab →
+**Brewscope sync → Run workflow**. It commits fresh data.
+
+**3 — Host on Cloudflare Pages (free).** dash.cloudflare.com → Workers & Pages → **Create →
+Pages → Connect to Git** → pick the repo. Framework preset **None**, build command **(empty)**,
+output directory **/**. Deploy → you get `https://brewscope-xxxx.pages.dev`. Every time the
+Action commits new data, Pages redeploys automatically.
+
+**4 — Lock it down (free).** Cloudflare → **Zero Trust → Access → Applications → Add a
+self-hosted app** for your `pages.dev` URL, policy = *Emails* → add your 2–3 teammates.
+Free for up to 50 users. They sign in by email code; nobody else can view.
+
+**5 — Enable the in-app Refresh button (optional).** In [`index.html`](index.html) set
+`window.BREWSCOPE_ACTIONS_URL` to your workflow URL
+(`https://github.com/<you>/<repo>/actions/workflows/sync.yml`). The **Sync** button becomes a
+**Refresh** link that opens the workflow's *Run workflow* page.
+
+**Notes / trade-offs:**
+- **No instant in-app Sync** — data refreshes on the schedule in `sync.yml` (default daily,
+  06:00 UTC; edit the `cron`) plus the manual *Run workflow* button. For a trend tool this is
+  usually better — it accumulates automatically with no one clicking.
+- GitHub Pages works too, but the free tier requires a **public** repo and has no built-in
+  login. Cloudflare Pages + Access keeps the repo private and gives free auth.
+- Want a **paid but always-dynamic** alternative with a live Sync button? See
+  [`render.yaml`](render.yaml) — Render Starter ($7/mo) runs `app.py` (waitress + a persistent
+  disk). Same code; `app.py` already reads `PORT`/`HOST`/`BREWSCOPE_PASSWORD`/`BREWSCOPE_DATA`.
 
 ## Notes
 

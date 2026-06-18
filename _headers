@@ -1,0 +1,3 @@
+# Cloudflare Pages headers. The data file changes daily — don't let it cache stale.
+/data/dataset.json
+  Cache-Control: no-cache, must-revalidate

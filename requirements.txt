@@ -5,3 +5,5 @@ vaderSentiment
 feedparser
 statsmodels
 numpy
+pytrends
+praw

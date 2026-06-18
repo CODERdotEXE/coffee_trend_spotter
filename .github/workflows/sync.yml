@@ -1,0 +1,49 @@
+name: Brewscope sync
+
+# Runs the data collector on a schedule (and on demand), then commits the refreshed
+# JSON back to the repo. Cloudflare/GitHub Pages auto-deploys the new data.
+on:
+  schedule:
+    - cron: "0 6 * * *"      # daily at 06:00 UTC (~11:30 IST). Edit as you like.
+  workflow_dispatch: {}        # the manual "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write              # allow the job to push the updated data files
+
+concurrency:
+  group: brewscope-sync        # never run two syncs at once
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run sync (collect + accumulate + forecast)
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USER_AGENT: ${{ secrets.REDDIT_USER_AGENT }}
+        run: python collector.py
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "brewscope-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/store.json data/dataset.json data/search_interest.json data/perception_interest.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No data changes this run."
+          else
+            git commit -m "Brewscope sync $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
